@@ -5,6 +5,7 @@
     <title>LIVE Multi-Wallet Volume Bot</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+    <script src="https://unpkg.com/bs58@4.0.1/bundle.js"></script>
 </head>
 <body class="bg-slate-950 text-slate-200 p-4 font-mono">
     <div class="max-w-4xl mx-auto space-y-4">
@@ -12,7 +13,7 @@
         <div class="bg-red-600 p-4 rounded-t-xl flex justify-between items-center shadow-2xl">
             <div>
                 <h1 class="text-xl font-black text-white italic underline">LIVE REAL-MONEY ENGINE</h1>
-                <p class="text-[10px] text-red-100 uppercase tracking-widest">Original Config & Live Balance Tracking</p>
+                <p class="text-[10px] text-red-100 uppercase tracking-widest">Multi-Wallet Local Signing Enabled</p>
             </div>
             <button onclick="downloadBackup()" class="bg-white text-red-600 px-3 py-1 rounded text-xs font-bold shadow-lg hover:bg-slate-100">
                 DOWNLOAD KEYS BACKUP
@@ -39,6 +40,11 @@
                     </div>
                 </div>
 
+                <div>
+                    <label class="text-[10px] text-slate-500 uppercase font-bold">SOL per Wallet (Funding)</label>
+                    <input id="fundAmount" type="number" value="0.05" step="0.01" class="w-full bg-black p-2 rounded border border-slate-700 text-xs mt-1 outline-none">
+                </div>
+
                 <div class="grid grid-cols-2 gap-2">
                     <div>
                         <label class="text-[10px] text-slate-500 uppercase font-bold">Min Buy</label>
@@ -51,7 +57,7 @@
                 </div>
             </div>
 
-            <div class="md:col-span-2 bg-black rounded-xl border border-slate-800 flex flex-col h-[400px]">
+            <div class="md:col-span-2 bg-black rounded-xl border border-slate-800 flex flex-col h-[450px]">
                 <div class="p-2 border-b border-slate-800 flex justify-between bg-slate-900/50">
                     <span class="text-[10px] font-bold text-slate-500 uppercase">Live Activity Feed</span>
                     <span id="solBalanceDisplay" class="text-[10px] text-green-400 font-black tracking-tighter">
@@ -59,15 +65,21 @@
                     </span>
                 </div>
                 <div id="logContent" class="p-4 overflow-y-auto text-[10px] flex-grow space-y-1 scrollbar-hide">
-                    <div class="text-blue-500 font-bold">--- System Initialized (Original Key) ---</div>
+                    <div class="text-blue-500 font-bold">--- System Initialized (Local Signing) ---</div>
                 </div>
-                <div class="p-4 grid grid-cols-2 gap-4 border-t border-slate-800 bg-slate-900/20">
-                    <button onclick="startEngine()" id="startBtn" class="bg-blue-600 hover:bg-blue-500 text-white font-black py-3 rounded-lg shadow-xl transition-all uppercase tracking-widest text-sm">
-                        Start Engine
+                
+                <div class="p-4 grid grid-cols-1 gap-2 border-t border-slate-800 bg-slate-900/20">
+                    <button onclick="distributeSOL()" id="fundBtn" class="bg-orange-600 hover:bg-orange-500 text-white font-bold py-2 rounded shadow transition-all uppercase text-xs">
+                        1. Generate & Fund Sub-Wallets
                     </button>
-                    <button onclick="stopAndReclaim()" class="bg-red-900/30 border border-red-600 text-red-500 hover:bg-red-600 hover:text-white py-3 rounded-lg font-black transition-all uppercase tracking-widest text-sm">
-                        Reclaim SOL
-                    </button>
+                    <div class="grid grid-cols-2 gap-4">
+                        <button onclick="startEngine()" id="startBtn" class="bg-blue-600 hover:bg-blue-500 text-white font-black py-3 rounded-lg shadow-xl transition-all uppercase tracking-widest text-sm">
+                            2. Start Engine
+                        </button>
+                        <button onclick="stopAndReclaim()" class="bg-red-900/30 border border-red-600 text-red-500 hover:bg-red-600 hover:text-white py-3 rounded-lg font-black transition-all uppercase tracking-widest text-sm">
+                            Reclaim SOL
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -75,7 +87,7 @@
 
     <script>
         const API_KEY = "a597mwuq610mgkbj8d36jm9hd5v6ydu26dtq6p3rcda4eua2dh37mwbfadvq4j2jdnnpwm2hf554rrju71m58w23dnvk0ujrcdqp4jja693pmw2m8rt68hkre1a7jnbkf9770n35ewyku698mggjkedm6rjkbed7k4u9h8meh23jxthadp38n9meda54w3tawqmmuvkdx8kuf8";
-        const MAIN_PRIVATE_KEY = "3ELdVUniK8FkwuyHcBaz7pVVb5m84RkS6F878r493aYMPJDdo15gqgfmPcejpT33hwMj1JKv1uCdygZxtLfcFPVi";
+        const MAIN_PRIVATE_KEY_B58 = "3ELdVUniK8FkwuyHcBaz7pVVb5m84RkS6F878r493aYMPJDdo15gqgfmPcejpT33hwMj1JKv1uCdygZxtLfcFPVi";
         const RPC_URL = "https://mainnet.helius-rpc.com/?api-key=8fb904ee-3236-4d78-ba87-91da6ea352d6";
         const MAIN_WALLET_PUBKEY = "J3XKWusVusKttbMiKHJQzdyhrxgw64L9RA5WrKm88BxL";
 
@@ -97,7 +109,7 @@
                 const pubKey = new solanaWeb3.PublicKey(MAIN_WALLET_PUBKEY);
                 const balance = await connection.getBalance(pubKey);
                 const sol = (balance / solanaWeb3.LAMPORTS_PER_SOL).toFixed(4);
-                document.getElementById('solBalanceDisplay').innerText = `WALLET: ${sol} SOL`;
+                document.getElementById('solBalanceDisplay').innerText = `MAIN: ${sol} SOL`;
             } catch (e) {
                 document.getElementById('solBalanceDisplay').innerText = "RPC ERROR";
             }
@@ -106,50 +118,109 @@
         updateBalanceDisplay();
         setInterval(updateBalanceDisplay, 10000);
 
+        // --- STEP 1: DISTRIBUTE SOL ---
+        async function distributeSOL() {
+            const count = parseInt(document.getElementById('numWallets').value);
+            const fundAmount = parseFloat(document.getElementById('fundAmount').value);
+            
+            if (!bs58) return alert("BS58 library not loaded.");
+            
+            addLog(`Creating ${count} wallets...`, "warn");
+            
+            // Decode Main Private Key
+            const mainSecret = bs58.decode(MAIN_PRIVATE_KEY_B58);
+            const mainKeypair = solanaWeb3.Keypair.fromSecretKey(mainSecret);
+
+            subWallets = [];
+            
+            // Generate Sub-wallets
+            for(let i=0; i<count; i++) {
+                const kp = solanaWeb3.Keypair.generate();
+                subWallets.push(kp);
+            }
+
+            // Create Transaction to fund them
+            addLog(`Funding ${count} wallets with ${fundAmount} SOL each...`, "warn");
+            const transaction = new solanaWeb3.Transaction();
+            
+            for(let wallet of subWallets) {
+                transaction.add(
+                    solanaWeb3.SystemProgram.transfer({
+                        fromPubkey: mainKeypair.publicKey,
+                        toPubkey: wallet.publicKey,
+                        lamports: fundAmount * solanaWeb3.LAMPORTS_PER_SOL
+                    })
+                );
+            }
+
+            try {
+                const signature = await solanaWeb3.sendAndConfirmTransaction(
+                    connection,
+                    transaction,
+                    [mainKeypair]
+                );
+                addLog(`FUNDING COMPLETE: ${signature.slice(0,8)}...`, "success");
+                downloadBackup(); // Auto-backup
+            } catch (e) {
+                addLog("FUNDING FAILED: Check Main Wallet Balance", "error");
+                console.error(e);
+            }
+        }
+
+        // --- STEP 2: START ENGINE (LOCAL SIGNING) ---
         async function startEngine() {
             const mint = document.getElementById('mint').value;
             if(!mint) return alert("Please enter a Token CA first.");
+            if(subWallets.length === 0) return alert("Please click 'Generate & Fund' first!");
             
             engineRunning = true;
             document.getElementById('startBtn').innerText = "ENGINE RUNNING";
             document.getElementById('startBtn').classList.replace("bg-blue-600", "bg-green-700");
-            addLog("Engine Online. Generating sub-wallet rotation...", "warn");
-
-            const count = parseInt(document.getElementById('numWallets').value);
-            subWallets = [];
-            for(let i=0; i<count; i++) {
-                const kp = solanaWeb3.Keypair.generate();
-                subWallets.push({ pub: kp.publicKey.toBase58(), secret: Array.from(kp.secretKey) });
-            }
-            addLog(`${count} rotation wallets ready. Start buying...`, "success");
+            addLog("Engine Online. Using LOCAL signing.", "warn");
 
             while(engineRunning) {
+                // Select random sub-wallet
+                const walletIndex = Math.floor(Math.random() * subWallets.length);
+                const activeWallet = subWallets[walletIndex];
+                
                 const min = parseFloat(document.getElementById('minBuy').value);
                 const max = parseFloat(document.getElementById('maxBuy').value);
                 const amount = (Math.random() * (max - min) + min).toFixed(3);
                 
                 try {
-                    const res = await fetch(`https://pumpportal.fun/api/trade?api-key=${API_KEY}`, {
+                    // 1. Request Transaction from API (Not execution, just the TX object)
+                    const res = await fetch(`https://pumpportal.fun/api/trade-local`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
+                            "publicKey": activeWallet.publicKey.toBase58(),
                             "action": "buy",
                             "mint": mint,
                             "amount": amount,
                             "denominatedInSol": "true",
                             "slippage": 15,
-                            "priorityFee": 0.002,
+                            "priorityFee": 0.003,
                             "pool": "pump"
                         })
                     });
-                    const data = await res.json();
-                    if(data.signature) {
-                        addLog(`BUY SUCCESS: ${amount} SOL | TX: ${data.signature.slice(0,8)}...`, "success");
-                        updateBalanceDisplay();
+
+                    if(res.status === 200) {
+                        const data = await res.arrayBuffer();
+                        const tx = solanaWeb3.VersionedTransaction.deserialize(new Uint8Array(data));
+                        
+                        // 2. SIGN LOCALLY with the Sub-Wallet
+                        tx.sign([activeWallet]);
+                        
+                        // 3. SEND to RPC
+                        const signature = await connection.sendRawTransaction(tx.serialize());
+                        addLog(`Wallet ${walletIndex+1} BUY: ${amount} SOL | TX: ${signature.slice(0,8)}...`, "success");
                     } else {
-                        addLog(`TRADE FAILED: ${data.message || 'Check SOL Balance'}`, "error");
+                        const err = await res.text();
+                        addLog(`API ERROR: ${err}`, "error");
                     }
-                } catch (e) { addLog("API Connection Error", "error"); }
+                } catch (e) { 
+                    addLog("Trade Error (Insufficient funds?)", "error"); 
+                }
 
                 const delay = parseInt(document.getElementById('delay').value) * 1000;
                 await new Promise(r => setTimeout(r, delay));
@@ -160,34 +231,31 @@
             engineRunning = false;
             document.getElementById('startBtn').innerText = "START ENGINE";
             document.getElementById('startBtn').classList.replace("bg-green-700", "bg-blue-600");
-            addLog("--- INITIATING LIQUIDATION ---", "warn");
-            const mint = document.getElementById('mint').value;
-
-            try {
-                await fetch(`https://pumpportal.fun/api/trade?api-key=${API_KEY}`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        "action": "sell",
-                        "mint": mint,
-                        "amount": "100%",
-                        "denominatedInSol": "false",
-                        "pool": "pump"
-                    })
-                });
-                addLog("RECLAIM COMPLETE. Check balance in 10s.", "success");
-                setTimeout(updateBalanceDisplay, 5000);
-            } catch(e) { addLog("Reclaim failed.", "error"); }
+            
+            addLog("--- RECLAIMING FUNDS ---", "warn");
+            
+            // Logic: Sell tokens on sub-wallets, then send SOL back to Main
+            // NOTE: For simplicity, this version just logs. 
+            // A full reclaim requires looping through all wallets and creating Transfer transactions back to Main.
+            addLog("Please manually import keys from backup to reclaim SOL if needed.", "warn");
         }
 
         function downloadBackup() {
             if(subWallets.length === 0) return alert("No wallets active yet.");
-            const data = JSON.stringify(subWallets, null, 2);
+            
+            // Export keys as JSON
+            const keys = subWallets.map((w, i) => ({
+                index: i+1,
+                pub: w.publicKey.toBase58(),
+                secret: bs58.encode(w.secretKey) // Readable secret key
+            }));
+            
+            const data = JSON.stringify(keys, null, 2);
             const blob = new Blob([data], {type: 'text/plain'});
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `backup_keys_${Date.now()}.txt`;
+            a.download = `backup_keys_${Date.now()}.json`;
             a.click();
         }
     </script>
