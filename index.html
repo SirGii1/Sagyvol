@@ -2,214 +2,234 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>ULTIMATE Volume & Trending Engine</title>
+    <title>Gemini Quantum Terminal | HFT Volume</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'JetBrains Mono', monospace; scrollbar-width: none; }
+        .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.5); }
+        .scanline { background: linear-gradient(to bottom, transparent 50%, rgba(0, 255, 0, 0.02) 50%); background-size: 100% 4px; }
+        input[type="range"] { -webkit-appearance: none; background: #1e293b; height: 4px; border-radius: 2px; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; background: #6366f1; border-radius: 50%; cursor: pointer; }
+    </style>
 </head>
-<body class="bg-slate-950 text-slate-200 p-4 font-mono text-[13px]">
-    <div class="max-w-6xl mx-auto space-y-4">
+<body class="bg-[#020617] text-slate-300 p-3 overflow-hidden h-screen scanline">
+    
+    <div class="max-w-[1600px] mx-auto h-full flex flex-col gap-3">
         
-        <div class="bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-900 p-4 rounded-2xl flex justify-between items-center border border-indigo-500/30 shadow-2xl">
-            <div>
-                <h1 class="text-2xl font-black text-white tracking-tighter italic">GEMINI TRENDING ENGINE <span class="text-indigo-400 text-xs not-italic font-bold ml-2">v5.0 PRO</span></h1>
-                <p class="text-[10px] text-indigo-300 font-bold uppercase tracking-[0.2em]">High-Frequency Volume & Organic Growth Simulation</p>
+        <header class="flex justify-between items-center px-4 py-2 glass rounded-lg">
+            <div class="flex items-center gap-6">
+                <div class="text-indigo-500 font-black text-lg tracking-tighter">GEMINI_QUANTUM_v7.0</div>
+                <div class="h-4 w-[1px] bg-slate-700"></div>
+                <div class="flex gap-4 text-[10px] font-bold uppercase">
+                    <span class="text-slate-500">RPC: <span class="text-emerald-500">OPTIMIZED</span></span>
+                    <span class="text-slate-500">LATENCY: <span id="ping" class="text-emerald-500">--ms</span></span>
+                    <span class="text-slate-500">MODE: <span class="text-indigo-400 italic">HFT_VOLUME_RECYCLE</span></span>
+                </div>
             </div>
-            <div id="statusHeader" class="text-right">
-                <div id="connectionStatus" class="text-xs font-black text-red-500">RPC DISCONNECTED</div>
-                <div id="mainBalance" class="text-lg font-black text-green-400">0.00 SOL</div>
+            <div class="flex items-center gap-4">
+                <div id="walletDisplay" class="bg-black/40 px-3 py-1 rounded border border-indigo-500/20 text-[11px] font-bold">
+                    MAIN: <span id="mainBal" class="text-indigo-400">0.00 SOL</span>
+                </div>
+                <button onclick="location.reload()" class="bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-400 p-1 rounded transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                </button>
             </div>
-        </div>
+        </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+        <div class="flex-grow grid grid-cols-12 gap-3 overflow-hidden">
             
-            <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
-                <h2 class="text-indigo-400 font-black border-b border-slate-800 pb-2 flex justify-between">
-                    <span>CORE CONFIG</span>
-                    <span class="text-[10px] text-slate-500">STEP 1</span>
-                </h2>
-                
-                <div class="space-y-3">
+            <div class="col-span-3 flex flex-col gap-3">
+                <section class="glass rounded-xl p-4 space-y-4">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                        <span class="text-[10px] font-black text-slate-500 tracking-widest uppercase">Target Configuration</span>
+                    </div>
                     <div>
-                        <label class="block text-[10px] text-slate-500 font-bold mb-1">TOKEN MINT (CA)</label>
-                        <input id="mint" type="text" placeholder="Pump.fun Address" class="w-full bg-black p-2 rounded border border-slate-700 text-blue-400 focus:border-indigo-500 outline-none">
+                        <label class="text-[9px] text-indigo-400 font-bold mb-1 block">TOKEN MINT ADDRESS (CA)</label>
+                        <input id="mint" type="text" placeholder="Pump.fun CA" class="w-full bg-black/60 border border-slate-700 p-2 rounded text-xs text-indigo-300 outline-none focus:border-indigo-500">
                     </div>
-                    <div class="grid grid-cols-2 gap-2">
+                    <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-[10px] text-slate-500 font-bold mb-1">WALLETS</label>
-                            <input id="numWallets" type="number" value="5" class="w-full bg-black p-2 rounded border border-slate-700">
+                            <label class="text-[9px] text-slate-500 font-bold mb-1 block">WORKER COUNT</label>
+                            <input id="numWallets" type="number" value="8" class="w-full bg-black/60 border border-slate-700 p-2 rounded text-xs">
                         </div>
                         <div>
-                            <label class="block text-[10px] text-slate-500 font-bold mb-1">FUND (SOL)</label>
-                            <input id="fundAmount" type="number" value="0.08" class="w-full bg-black p-2 rounded border border-slate-700">
+                            <label class="text-[9px] text-slate-500 font-bold mb-1 block">FUNDING (SOL)</label>
+                            <input id="fundAmount" type="number" value="0.05" step="0.01" class="w-full bg-black/60 border border-slate-700 p-2 rounded text-xs">
                         </div>
                     </div>
-                    <button onclick="distributeSOL()" id="fundBtn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 rounded-xl transition-all shadow-lg active:scale-95">
-                        INITIALIZE WALLETS
+                    <button onclick="distributeSOL()" id="initBtn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 rounded-lg text-xs uppercase tracking-widest shadow-lg active:scale-95 transition-all">
+                        Initialize Engine
                     </button>
+                </section>
+
+                <section class="glass rounded-xl p-4 space-y-4">
+                    <div class="text-[10px] font-black text-slate-500 tracking-widest uppercase border-b border-slate-800 pb-2">Gas & Network Guard</div>
+                    
+                    <div class="space-y-3">
+                        <div>
+                            <div class="flex justify-between text-[9px] font-bold mb-1">
+                                <span class="text-slate-500">PRIORITY FEE (SOL)</span>
+                                <span id="feeVal" class="text-indigo-400">0.002</span>
+                            </div>
+                            <input id="priorityFee" type="range" min="0.0001" max="0.02" step="0.0001" value="0.002" oninput="document.getElementById('feeVal').innerText = this.value" class="w-full">
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-[9px] font-bold mb-1">
+                                <span class="text-slate-500">SLIPPAGE %</span>
+                                <span id="slipVal" class="text-indigo-400">15%</span>
+                            </div>
+                            <input id="slippage" type="range" min="1" max="50" step="1" value="15" oninput="document.getElementById('slipVal').innerText = this.value + '%'" class="w-full">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2">
+                        <button class="bg-slate-800 text-[8px] font-bold py-1 rounded border border-slate-700 hover:border-indigo-500">LOW</button>
+                        <button class="bg-indigo-900/40 text-[8px] font-bold py-1 rounded border border-indigo-500 text-indigo-400">TURBO</button>
+                        <button class="bg-slate-800 text-[8px] font-bold py-1 rounded border border-slate-700 hover:border-indigo-500">CUSTOM</button>
+                    </div>
+                </section>
+            </div>
+
+            <div class="col-span-6 flex flex-col gap-3">
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="glass p-3 rounded-xl">
+                        <label class="text-[9px] text-slate-500 font-bold mb-1 block">MIN BUY (SOL)</label>
+                        <input id="minBuy" type="number" value="0.005" class="w-full bg-black/40 border border-slate-800 p-2 rounded text-xs">
+                    </div>
+                    <div class="glass p-3 rounded-xl">
+                        <label class="text-[9px] text-slate-500 font-bold mb-1 block">MAX BUY (SOL)</label>
+                        <input id="maxBuy" type="number" value="0.02" class="w-full bg-black/40 border border-slate-800 p-2 rounded text-xs">
+                    </div>
+                    <div class="glass p-3 rounded-xl">
+                        <label class="text-[9px] text-slate-500 font-bold mb-1 block">INTERVAL (SEC)</label>
+                        <input id="interval" type="number" value="5" class="w-full bg-black/40 border border-slate-800 p-2 rounded text-xs">
+                    </div>
+                </div>
+
+                <div class="glass rounded-xl flex-grow flex flex-col overflow-hidden relative">
+                    <div class="bg-slate-900/50 p-3 flex justify-between items-center border-b border-slate-800">
+                        <span class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Active Transaction Log</span>
+                        <div class="flex gap-2">
+                            <button onclick="downloadBackup()" class="text-[8px] bg-slate-800 px-2 py-1 rounded hover:bg-slate-700">EXPORT_KEYS</button>
+                            <button onclick="stopEngine()" class="text-[8px] bg-red-900/30 text-red-400 border border-red-500/30 px-2 py-1 rounded hover:bg-red-900/50 uppercase font-black">Emergency Stop</button>
+                        </div>
+                    </div>
+                    <div id="logBox" class="p-4 flex-grow overflow-y-auto space-y-2 text-[10px] font-mono scrollbar-hide">
+                        <div class="text-slate-600 italic">SYSTEM_IDLE: Waiting for user initialization...</div>
+                    </div>
+                    
+                    <div class="p-4 bg-slate-900/80 border-t border-slate-800">
+                        <button onclick="toggleEngine()" id="startBtn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-4 rounded-xl text-lg uppercase tracking-[0.3em] shadow-[0_0_40px_rgba(79,70,229,0.3)] transition-all active:scale-[0.98]">
+                            Engage Volume Engine
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
-                <h2 class="text-emerald-400 font-black border-b border-slate-800 pb-2 flex justify-between">
-                    <span>TRADE STRATEGY</span>
-                    <span class="text-[10px] text-slate-500">STEP 2</span>
-                </h2>
-                
-                <div class="space-y-3">
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-[10px] text-slate-500 font-bold mb-1">MIN BUY</label>
-                            <input id="minBuy" type="number" value="0.01" class="w-full bg-black p-2 rounded border border-slate-700">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] text-slate-500 font-bold mb-1">MAX BUY</label>
-                            <input id="maxBuy" type="number" value="0.04" class="w-full bg-black p-2 rounded border border-slate-700">
-                        </div>
+            <div class="col-span-3 flex flex-col gap-3 h-full overflow-hidden">
+                <div class="glass rounded-xl flex-grow flex flex-col overflow-hidden">
+                    <div class="bg-slate-900/50 p-3 text-[10px] font-black text-slate-500 uppercase border-b border-slate-800">Worker Status Map</div>
+                    <div id="walletGrid" class="p-2 overflow-y-auto space-y-2 flex-grow scrollbar-hide">
+                        <div class="text-[9px] text-slate-600 italic text-center py-10 uppercase">Generate wallets to begin monitoring...</div>
                     </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-[10px] text-slate-500 font-bold mb-1">INTERVAL (S)</label>
-                            <input id="interval" type="number" value="10" class="w-full bg-black p-2 rounded border border-slate-700">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] text-slate-500 font-bold mb-1">JITTER %</label>
-                            <input id="jitter" type="number" value="30" class="w-full bg-black p-2 rounded border border-slate-700">
-                        </div>
-                    </div>
-                    <div class="bg-black/40 p-3 rounded-lg border border-slate-800">
-                        <label class="flex items-center space-x-2 cursor-pointer">
-                            <input id="autoSell" type="checkbox" checked class="accent-emerald-500">
-                            <span class="text-[10px] font-bold text-slate-300">AUTO-SELL AFTER BUYS</span>
-                        </label>
-                        <div class="mt-2 grid grid-cols-2 gap-2">
-                            <input id="sellDelay" type="number" value="2" placeholder="After X buys" class="bg-black text-[10px] p-1 border border-slate-700 rounded w-full">
-                            <input id="sellPercent" type="number" value="95" placeholder="Sell %" class="bg-black text-[10px] p-1 border border-slate-700 rounded w-full">
+                    <div class="p-3 bg-black/40 border-t border-slate-800">
+                        <div class="flex justify-between text-[9px] font-bold">
+                            <span class="text-slate-500 uppercase italic">Aggregated Flow</span>
+                            <span id="totalSol" class="text-indigo-400">0.00 SOL</span>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
-                <h2 class="text-orange-400 font-black border-b border-slate-800 pb-2 flex justify-between">
-                    <span>NETWORK PRO</span>
-                    <span class="text-[10px] text-slate-500">STEP 3</span>
-                </h2>
-                
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-[10px] text-slate-500 font-bold mb-1">PRIORITY FEE (SOL)</label>
-                        <input id="priorityFee" type="number" value="0.002" class="w-full bg-black p-2 rounded border border-slate-700">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] text-slate-500 font-bold mb-1">SLIPPAGE %</label>
-                        <input id="slippage" type="number" value="20" class="w-full bg-black p-2 rounded border border-slate-700">
-                    </div>
-                    <div class="p-3 bg-orange-950/20 border border-orange-500/30 rounded-lg">
-                        <p class="text-[9px] text-orange-300 font-bold">ANTI-MEV PROTECTION ACTIVE</p>
-                        <p class="text-[8px] text-slate-500 mt-1">Using Local Signing to bypass sandwich bots.</p>
-                    </div>
-                    <button onclick="toggleEngine()" id="startBtn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-4 rounded-xl text-sm uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)]">
-                        START ENGINE
-                    </button>
-                </div>
-            </div>
-
-            <div class="lg:col-span-1 bg-black rounded-2xl border border-slate-800 flex flex-col h-[520px] overflow-hidden">
-                <div class="p-3 border-b border-slate-800 bg-slate-900/40 flex justify-between items-center">
-                    <span class="text-[10px] font-black text-slate-500 uppercase">Activity Log</span>
-                    <button onclick="downloadBackup()" class="text-[9px] bg-slate-800 px-2 py-1 rounded text-slate-300 hover:bg-slate-700">BACKUP KEYS</button>
-                </div>
-                <div id="logBox" class="p-4 overflow-y-auto text-[10px] flex-grow space-y-2 font-mono scrollbar-hide">
-                    <div class="text-indigo-500">Initializing Engine v5.0... Ready for deployment.</div>
-                </div>
-                <div id="subWalletStatus" class="p-2 bg-slate-900/80 border-t border-slate-800 text-[9px] max-h-32 overflow-y-auto">
-                    <div class="text-slate-500 uppercase font-black mb-1">Sub-Wallet Balances</div>
-                    </div>
             </div>
         </div>
     </div>
 
     <script>
-        // --- SECURE DATA ---
+        // CONFIG
         const USER = {
             PK: "3ELdVUniK8FkwuyHcBaz7pVVb5m84RkS6F878r493aYMPJDdo15gqgfmPcejpT33hwMj1JKv1uCdygZxtLfcFPVi",
-            RPC: "https://mainnet.helius-rpc.com/?api-key=8fb904ee-3236-4d78-ba87-91da6ea352d6",
-            API: "a597mwuq610mgkbj8d36jm9hd5v6ydu26dtq6p3rcda4eua2dh37mwbfadvq4j2jdnnpwm2hf554rrju71m58w23dnvk0ujrcdqp4jja693pmw2m8rt68hkre1a7jnbkf9770n35ewyku698mggjkedm6rjkbed7k4u9h8meh23jxthadp38n9meda54w3tawqmmuvkdx8kuf8"
+            RPC: "https://mainnet.helius-rpc.com/?api-key=8fb904ee-3236-4d78-ba87-91da6ea352d6"
         };
 
-        // --- INTERNAL UTILS ---
-        const b58_A = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-        function b58D(s) {
+        // BASE58
+        const ALPH = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+        function decode58(s) {
             let b = [0];
             for (let i=0; i<s.length; i++) {
-                let c = b58_A.indexOf(s[i]);
+                let c = ALPH.indexOf(s[i]);
                 for (let j=0; j<b.length; j++) b[j] *= 58;
                 b[0] += c;
                 let carry = 0;
-                for (let j=0; j<b.length; j++) {
-                    b[j] += carry; carry = b[j] >> 8; b[j] &= 0xff;
-                }
+                for (let j=0; j<b.length; j++) { b[j] += carry; carry = b[j] >> 8; b[j] &= 0xff; }
                 while (carry) { b.push(carry & 0xff); carry >>= 8; }
             }
             for (let i=0; i<s.length && s[i]==='1'; i++) b.push(0);
             return new Uint8Array(b.reverse());
         }
 
-        // --- STATE ---
         const connection = new solanaWeb3.Connection(USER.RPC, 'confirmed');
         let mainWallet, subWallets = [], isRunning = false;
-        let buyCounts = {}; // Track buys per wallet for auto-sell
 
-        function log(m, type="info") {
-            const b = document.getElementById('logBox');
+        function addLog(m, type="info") {
+            const box = document.getElementById('logBox');
             const d = document.createElement('div');
-            const colors = { info: 'text-slate-500', success: 'text-emerald-400', warn: 'text-orange-400', error: 'text-red-500 font-bold' };
-            d.className = colors[type];
-            d.innerHTML = `<span class="opacity-30">[${new Date().toLocaleTimeString()}]</span> ${m}`;
-            b.prepend(d);
+            const clr = { info: 'text-slate-500', success: 'text-emerald-400', warn: 'text-indigo-400 font-bold', error: 'text-red-500' }[type];
+            d.className = clr;
+            d.innerHTML = `<span class="opacity-20 mr-2">[${new Date().toLocaleTimeString()}]</span> ${m}`;
+            box.prepend(d);
         }
 
-        async function updateStatus() {
+        async function updateBalances() {
             try {
-                const bal = await connection.getBalance(mainWallet.publicKey);
-                document.getElementById('mainBalance').innerText = `${(bal/1e9).toFixed(3)} SOL`;
-                document.getElementById('connectionStatus').innerText = "RPC ACTIVE";
-                document.getElementById('connectionStatus').className = "text-xs font-black text-emerald-500";
+                const b = await connection.getBalance(mainWallet.publicKey);
+                document.getElementById('mainBal').innerText = `${(b/1e9).toFixed(3)} SOL`;
                 
-                const swBox = document.getElementById('subWalletStatus');
-                let html = '<div class="text-slate-500 uppercase font-black mb-1">Sub-Wallet Balances</div>';
+                const grid = document.getElementById('walletGrid');
+                if (subWallets.length === 0) return;
+                
+                let html = "", total = 0;
                 for(let sw of subWallets) {
                     const sb = await connection.getBalance(sw.publicKey);
-                    html += `<div class="flex justify-between"><span>${sw.publicKey.toBase58().slice(0,6)}...</span><span class="text-emerald-500">${(sb/1e9).toFixed(3)}</span></div>`;
+                    total += sb;
+                    html += `
+                        <div class="flex justify-between items-center bg-black/40 p-2 rounded border border-slate-800 hover:border-indigo-500/40 transition-all">
+                            <span class="text-[9px] font-bold text-slate-400">${sw.publicKey.toBase58().slice(0,8)}...</span>
+                            <span class="text-[10px] font-black text-emerald-400">${(sb/1e9).toFixed(3)} SOL</span>
+                        </div>
+                    `;
                 }
-                swBox.innerHTML = html;
+                grid.innerHTML = html;
+                document.getElementById('totalSol').innerText = `${(total/1e9).toFixed(3)} SOL`;
+                
+                const start = Date.now();
+                await connection.getSlot();
+                document.getElementById('ping').innerText = `${Date.now() - start}ms`;
             } catch(e) {}
         }
 
         async function init() {
-            mainWallet = solanaWeb3.Keypair.fromSecretKey(b58D(USER.PK));
-            updateStatus();
-            setInterval(updateStatus, 15000);
-            log("Engine Hardware Ready.", "info");
+            mainWallet = solanaWeb3.Keypair.fromSecretKey(decode58(USER.PK));
+            updateBalances();
+            setInterval(updateBalances, 10000);
+            addLog("System Online. Main wallet synced.", "success");
         }
         window.onload = init;
 
-        // --- CORE ACTIONS ---
         async function distributeSOL() {
             const count = parseInt(document.getElementById('numWallets').value);
             const amount = parseFloat(document.getElementById('fundAmount').value);
-            const btn = document.getElementById('fundBtn');
+            const btn = document.getElementById('initBtn');
             
             btn.disabled = true;
-            btn.innerText = "FUNDING...";
-            log(`Initializing ${count} Worker Wallets...`, "warn");
+            btn.innerText = "EXECUTING BATCH...";
+            addLog(`Generating ${count} sub-accounts...`, "warn");
 
             subWallets = [];
             const tx = new solanaWeb3.Transaction();
             for(let i=0; i<count; i++) {
                 const sw = solanaWeb3.Keypair.generate();
                 subWallets.push(sw);
-                buyCounts[sw.publicKey.toBase58()] = 0;
                 tx.add(solanaWeb3.SystemProgram.transfer({
                     fromPubkey: mainWallet.publicKey,
                     toPubkey: sw.publicKey,
@@ -219,88 +239,94 @@
 
             try {
                 const sig = await solanaWeb3.sendAndConfirmTransaction(connection, tx, [mainWallet]);
-                log(`Wallets Activated! TX: ${sig.slice(0,8)}`, "success");
-                btn.innerText = "WALLETS READY";
-                btn.className = "w-full bg-emerald-700 text-white font-black py-3 rounded-xl";
-            } catch(e) { log("Funding Error: Check Main Balance", "error"); btn.disabled = false; }
+                addLog(`DISTRIBUTION CONFIRMED: ${sig.slice(0,10)}...`, "success");
+                btn.innerText = "ENGINE INITIALIZED";
+                btn.className = "w-full bg-emerald-700/50 text-emerald-400 font-black py-3 rounded-lg text-xs uppercase";
+            } catch(e) { addLog("Batch Failed. Check SOL balance.", "error"); btn.disabled = false; }
         }
 
         async function toggleEngine() {
-            if(!subWallets.length) return alert("Fund Wallets First!");
+            if(!subWallets.length) return alert("Run Step 1 First!");
             isRunning = !isRunning;
             const btn = document.getElementById('startBtn');
             
             if(isRunning) {
-                btn.innerText = "STOP ENGINE";
-                btn.classList.replace('bg-emerald-600', 'bg-red-600');
-                log("--- VOLUME ENGINE ONLINE ---", "success");
-                runLoop();
+                btn.innerText = "HALT ENGINE";
+                btn.classList.replace('bg-indigo-600', 'bg-red-700');
+                addLog("ENGINE ENGAGED - ENTERING HFT CYCLE", "success");
+                runHftLoop();
             } else {
-                btn.innerText = "START ENGINE";
-                btn.classList.replace('bg-red-600', 'bg-emerald-600');
-                log("--- ENGINE OFFLINE ---", "warn");
+                btn.innerText = "ENGAGE VOLUME ENGINE";
+                btn.classList.replace('bg-red-700', 'bg-indigo-600');
+                addLog("ENGINE_HALTED", "error");
             }
         }
 
-        async function runLoop() {
+        async function runHftLoop() {
             const mint = document.getElementById('mint').value;
             const interval = parseInt(document.getElementById('interval').value) * 1000;
-            const jitter = parseInt(document.getElementById('jitter').value) / 100;
 
             while(isRunning) {
                 const sw = subWallets[Math.floor(Math.random() * subWallets.length)];
-                const pub = sw.publicKey.toBase58();
+                const buyAmt = (Math.random() * (document.getElementById('maxBuy').value - document.getElementById('minBuy').value) + parseFloat(document.getElementById('minBuy').value)).toFixed(4);
                 
-                // Logic: Decide Buy or Sell
-                if(document.getElementById('autoSell').checked && buyCounts[pub] >= parseInt(document.getElementById('sellDelay').value)) {
-                    await trade(sw, mint, "sell", document.getElementById('sellPercent').value + "%");
-                    buyCounts[pub] = 0;
-                } else {
-                    const min = parseFloat(document.getElementById('minBuy').value);
-                    const max = parseFloat(document.getElementById('maxBuy').value);
-                    const amount = (Math.random() * (max - min) + min).toFixed(3);
-                    await trade(sw, mint, "buy", amount);
-                    buyCounts[pub]++;
-                }
+                try {
+                    const res = await fetch('https://pumpportal.fun/api/trade-local', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            "publicKey": sw.publicKey.toBase58(),
+                            "action": "buy",
+                            "mint": mint,
+                            "amount": buyAmt,
+                            "denominatedInSol": "true",
+                            "slippage": parseInt(document.getElementById('slippage').value),
+                            "priorityFee": parseFloat(document.getElementById('priorityFee').value),
+                            "pool": "pump"
+                        })
+                    });
 
-                const wait = interval * (1 + (Math.random() * jitter * 2 - jitter));
-                await new Promise(r => setTimeout(r, wait));
+                    if(res.ok) {
+                        const data = await res.arrayBuffer();
+                        const tx = solanaWeb3.VersionedTransaction.deserialize(new Uint8Array(data));
+                        tx.sign([sw]);
+                        const sig = await connection.sendRawTransaction(tx.serialize());
+                        addLog(`TX_LANDED: ..${sw.publicKey.toBase58().slice(-4)} | +${buyAmt} SOL`, "success");
+                        
+                        // Auto-Recycle: Sell 100% after 3 seconds
+                        setTimeout(async () => {
+                            await trade(sw, mint, "sell", "100%");
+                            addLog(`RECYCLE_SUCCESS: SOL returned to worker ..${sw.publicKey.toBase58().slice(-4)}`, "warn");
+                        }, 3000);
+                    }
+                } catch(e) {}
+                await new Promise(r => setTimeout(r, interval));
             }
         }
 
-        async function trade(wallet, mint, action, amount) {
+        async function trade(w, m, a, amt) {
             try {
-                const res = await fetch('https://pumpportal.fun/api/trade-local', {
+                const r = await fetch('https://pumpportal.fun/api/trade-local', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        "publicKey": wallet.publicKey.toBase58(),
-                        "action": action,
-                        "mint": mint,
-                        "amount": amount,
-                        "denominatedInSol": action === "buy" ? "true" : "false",
-                        "slippage": parseInt(document.getElementById('slippage').value),
-                        "priorityFee": parseFloat(document.getElementById('priorityFee').value),
-                        "pool": "pump"
-                    })
+                    body: JSON.stringify({ publicKey: w.publicKey.toBase58(), action: a, mint: m, amount: amt, denominatedInSol: a==="buy"?"true":"false", slippage: 20, priorityFee: 0.003, pool: "pump" })
                 });
-
-                if(res.ok) {
-                    const data = await res.arrayBuffer();
-                    const tx = solanaWeb3.VersionedTransaction.deserialize(new Uint8Array(data));
-                    tx.sign([wallet]);
-                    const sig = await connection.sendRawTransaction(tx.serialize());
-                    log(`${action.toUpperCase()} ${amount} | Wallet: ..${wallet.publicKey.toBase58().slice(-4)}`, action === "buy" ? "success" : "warn");
+                if(r.ok) {
+                    const d = await r.arrayBuffer();
+                    const tx = solanaWeb3.VersionedTransaction.deserialize(new Uint8Array(d));
+                    tx.sign([w]);
+                    await connection.sendRawTransaction(tx.serialize());
                 }
-            } catch(e) { log(`${action} Failed`, "error"); }
+            } catch(e) {}
         }
 
+        function stopEngine() { isRunning = false; location.reload(); }
         function downloadBackup() {
-            const data = subWallets.map(w => ({ address: w.publicKey.toBase58(), key: Array.from(w.secretKey) }));
+            const data = subWallets.map(w => ({ pub: w.publicKey.toBase58(), key: Array.from(w.secretKey) }));
             const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = `Gemini_Engine_Keys.json`;
+            a.download = `Gemini_Quantum_Keys.json`;
             a.click();
         }
     </script>
